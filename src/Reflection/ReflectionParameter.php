@@ -1,10 +1,12 @@
 <?php
 
-namespace BetterReflection;
+namespace BetterReflection\Reflection;
 
 use PhpParser\Node\Param as ParamNode;
 use PhpParser\Node;
 use phpDocumentor\Reflection\Type;
+use BetterReflection\NodeCompiler\NodeCompiler;
+use BetterReflection\TypesFinder\TypesFinder;
 
 class ReflectionParameter implements \Reflector
 {
@@ -90,7 +92,7 @@ class ReflectionParameter implements \Reflector
         $param->parameterIndex = $parameterIndex;
 
         if ($param->isOptional) {
-            $param->defaultValue = Reflector::compileNodeExpression($node->default);
+            $param->defaultValue = NodeCompiler::compile($node->default);
         }
 
         $param->types = TypesFinder::findTypeForParameter($function, $node);
