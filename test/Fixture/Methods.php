@@ -2,7 +2,7 @@
 
 namespace BetterReflectionTest\Fixture;
 
-abstract class MethodsTest
+abstract class Methods
 {
     public function __construct()
     {

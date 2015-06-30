@@ -3,6 +3,8 @@
 namespace BetterReflectionTest;
 
 use BetterReflection\Reflector;
+use BetterReflection\SourceLocator\ComposerSourceLocator;
+use BetterReflection\SourceLocator\StringSourceLocator;
 
 class ReflectionParameterTest extends \PHPUnit_Framework_TestCase
 {
@@ -14,7 +16,7 @@ class ReflectionParameterTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         global $loader;
-        $this->reflector = new Reflector($loader);
+        $this->reflector = new Reflector(new ComposerSourceLocator($loader));
     }
 
     public function defaultParameterProvider()
@@ -31,13 +33,16 @@ class ReflectionParameterTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @param string $defaultExpression
+     * @param mixed $expectedValue
      * @dataProvider defaultParameterProvider
      */
     public function testDefaultParametersTypes($defaultExpression, $expectedValue)
     {
         $content = "<?php class Foo { public function myMethod(\$var = $defaultExpression) {} }";
 
-        $classInfo = $this->reflector->reflectClassFromString('Foo', $content);
+        $reflector = new Reflector(new StringSourceLocator($content));
+        $classInfo = $reflector->reflect('Foo');
         $methodInfo = $classInfo->getMethod('myMethod');
         $paramInfo = $methodInfo->getParameter('var');
         $actualValue = $paramInfo->getDefaultValue();
@@ -47,7 +52,7 @@ class ReflectionParameterTest extends \PHPUnit_Framework_TestCase
 
     public function testGetTypeStrings()
     {
-        $classInfo = $this->reflector->reflect('\BetterReflectionTest\Fixture\MethodsTest');
+        $classInfo = $this->reflector->reflect('\BetterReflectionTest\Fixture\Methods');
 
         $method = $classInfo->getMethod('methodWithParameters');
 
@@ -60,7 +65,7 @@ class ReflectionParameterTest extends \PHPUnit_Framework_TestCase
 
     public function testStringCast()
     {
-        $classInfo = $this->reflector->reflect('\BetterReflectionTest\Fixture\MethodsTest');
+        $classInfo = $this->reflector->reflect('\BetterReflectionTest\Fixture\Methods');
         $method = $classInfo->getMethod('methodWithOptionalParameters');
 
         $requiredParam = $method->getParameter('parameter');
