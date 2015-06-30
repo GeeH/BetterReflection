@@ -49,7 +49,11 @@ abstract class ReflectionFunctionAbstract
         }
 
         foreach ($node->params as $paramIndex => $paramNode) {
-            $this->parameters[] = ReflectionParameter::createFromNode($paramNode, $this, $paramIndex);
+            $this->parameters[] = ReflectionParameter::createFromNode(
+                $paramNode,
+                $this,
+                $paramIndex
+            );
         }
     }
 
@@ -80,13 +84,17 @@ abstract class ReflectionFunctionAbstract
      */
     public function getNumberOfRequiredParameters()
     {
-        return count(array_filter($this->parameters, function (ReflectionParameter $p) {
-            return !$p->isOptional();
-        }));
+        return count(array_filter(
+            $this->parameters,
+            function (ReflectionParameter $p) {
+                return !$p->isOptional();
+            }
+        ));
     }
 
     /**
-     * Get an array list of the parameters for this method signature, as an array of ReflectionParameter instances
+     * Get an array list of the parameters for this method signature, as an
+     * array of ReflectionParameter instances
      *
      * @return ReflectionParameter[]
      */
@@ -96,7 +104,8 @@ abstract class ReflectionFunctionAbstract
     }
 
     /**
-     * Get a single parameter by name. Returns null if parameter not found for the function
+     * Get a single parameter by name. Returns null if parameter not found for
+     * the function
      *
      * @param string $parameterName
      * @return ReflectionParameter|null

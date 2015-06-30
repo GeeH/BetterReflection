@@ -31,7 +31,9 @@ class NodeCompiler
                 } else if ($node->name->parts[0] == 'true') {
                     return true;
                 } else {
-                    throw new \LogicException('Other ConstFetch types are not implemented yet');
+                    throw new \LogicException(
+                        'Other ConstFetch types are not implemented yet'
+                    );
                 }
                 break;
             default:

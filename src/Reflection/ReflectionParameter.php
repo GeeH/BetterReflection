@@ -66,12 +66,13 @@ class ReflectionParameter implements \Reflector
      */
     public function __toString()
     {
+        $optional = $this->isOptional();
         return sprintf(
             'Parameter #%d [ %s $%s%s ]',
             $this->parameterIndex,
-            $this->isOptional() ? '<optional>' : '<required>',
+            $optional ? '<optional>' : '<required>',
             $this->getName(),
-            $this->isOptional() ? (' = ' . $this->getDefaultValueAsString()) : ''
+            $optional ? (' = ' . $this->getDefaultValueAsString()) : ''
         );
     }
 
@@ -81,8 +82,10 @@ class ReflectionParameter implements \Reflector
      * @param int $parameterIndex
      * @return ReflectionParameter
      */
-    public static function createFromNode(ParamNode $node, ReflectionFunctionAbstract $function, $parameterIndex)
-    {
+    public static function createFromNode(
+        ParamNode $node,
+        ReflectionFunctionAbstract $function, $parameterIndex
+    ) {
         $param = new self();
         $param->name = $node->name;
         $param->function = $function;
@@ -121,7 +124,8 @@ class ReflectionParameter implements \Reflector
     }
 
     /**
-     * Get the class from the method that this parameter belongs to, if it exists.
+     * Get the class from the method that this parameter belongs to, if it
+     * exists.
      *
      * This will return null if the declaring function is not a method.
      *
@@ -155,12 +159,20 @@ class ReflectionParameter implements \Reflector
     public function getDefaultValue()
     {
         if (!$this->isOptional()) {
-            throw new \LogicException('This is not an optional parameter, so cannot have a default value');
+            throw new \LogicException(
+                'This is not an optional parameter, so cannot have '
+                    . 'a default value'
+            );
         }
 
         return $this->defaultValue;
     }
 
+    /**
+     * Get the default value represented as a string
+     *
+     * @return string
+     */
     public function getDefaultValueAsString()
     {
         $defaultValue = $this->getDefaultValue();
@@ -179,9 +191,14 @@ class ReflectionParameter implements \Reflector
             case 'object':
             case 'resource':
             case 'unknown type':
-                throw new \RuntimeException(
-                    'Default value as an instance of an ' . $type . ' does not make any sense'
-                );
+            default:
+                $typeExceptionMessage = 'Default value as an instance of an %s'
+                    . ' does not make any sense';
+
+                throw new \RuntimeException(sprintf(
+                    $typeExceptionMessage,
+                    $type
+                ));
         }
     }
 
